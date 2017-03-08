@@ -8,29 +8,29 @@ var net = new brain.NeuralNetwork();
 var fonts = [
   'lato',
   'oswald',
-  'istok Web',
-  'Lora',
-  'Merriweather',
-  'Montserrat',
-  'Domine',
-  'Neuton',
-  'Playfair Display',
-  'Muli',
+  'istok web',
+  'lora',
+  'merriweather',
+  'montserrat',
+  'domine',
+  'neuton',
+  'playfair display',
+  'muli',
   'ubuntu',
-  'Amatic SC',
-  'Andika',
-  'Flamenco',
-  'Asap'
+  'amatic sc',
+  'andika',
+  'flamenco',
+  'asap'
 ]
 
-net.train([{input: {pos: 0}, output: {pos: 0.4}},
+net.train([{input: {pos: 0.0}, output: {pos: 0.4}},
            {input: {pos: 0.1}, output: {pos: 0.2}},
            {input: {pos: 0.2}, output: {pos: 0.3}},
            {input: {pos: 0.4}, output: {pos: 0.6}},
            {input: {pos: 0.5}, output: {pos: 0.7}},
            {input: {pos: 0.8}, output: {pos: 0.9}},
-           {input: {pos: 0.10}, output: {pos: 0.11}},
-           {input: {pos: 0.12}, output: {pos: 0.13}},
+           {input: {pos: 0.010}, output: {pos: 0.011}},
+           {input: {pos: 0.012}, output: {pos: 0.013}},
          ]);
         //  {
         //     errorThresh: 0.005,
@@ -48,18 +48,18 @@ net.train([{input: {pos: 0}, output: {pos: 0.4}},
       	/////////////////////////////////////////////////////////////
       	/****************************HELPER FUNCTIONS*******************/
       	var getOutputIndex = () => {
-      		let firstFont = document.getElementById('firstFont').value;
+      		let firstFont = document.getElementById('firstFont').value.toLowerCase();
       		let indexOfFirstFont = checkInFontsArray(firstFont);
           if(indexOfFirstFont > -1) {
       			let newIndex = modifyIndex(indexOfFirstFont);
-
+            console.log(newIndex);
       			// Run the model
       			let output = net.run({pos: newIndex});
-
+            console.log(output);
             let expo = getLength(indexOfFirstFont);
-      			// Change the index back to it's original form
+            // Change the index back to it's original form
             console.log(typeof expo);
-            let outputIndexWithDec = output.pos * Math.pow(10,expo);
+            let outputIndexWithDec = output.pos * fonts.length;
             let outputIndex = Math.floor(outputIndexWithDec);
       			return outputIndex;
       		}
@@ -79,12 +79,15 @@ net.train([{input: {pos: 0}, output: {pos: 0.4}},
           return 0.0;
 
           let expo = getLength(index);
-      		return index * Math.pow(10,expo);
+          if(expo > 1) {
+            expo += 1;
+          }
+      		return index / Math.pow(10,expo);
       	}
       	////////////////////////////////////
       	var outputDiv = document.getElementById('output');
       	var getOutput = document.getElementById('getOutput');
-        var dataForm = document.getElementByClassName('data-form')[0];
+        var dataForm = document.getElementsByClassName('data-form')[0];
       	console.log(getOutput);
 
         var getOutputAction = (e) => {
@@ -95,8 +98,14 @@ net.train([{input: {pos: 0}, output: {pos: 0.4}},
             let outputIndex = getOutputIndex();
         		if(outputIndex) {
         				let result = fonts[outputIndex];
-        				outputDiv.innerHTML = '<p>The font pair is <span class="result">'+result+'</span></p>';
-        		}else{
+
+                if(result){
+                  outputDiv.innerHTML = '<p>The font pair is <span class="result">'+result+'</span></p>';
+                }
+                else{
+                  outputDiv.innerHTML = '<p>The font pair is <span class="result">not found</span> in the database</p>';
+                }
+            }else{
         			outputDiv.innerHTML = '<p>Font is not in the database</p>';
         		}
           },500);
